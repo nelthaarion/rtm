@@ -1,0 +1,235 @@
+// RTM Annotator — Complete Prisma schema
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  name          String
+  passwordHash  String?
+  role          String   @default("LABELER")
+  active        Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  totalPoints        Int @default(0)
+  currentStreak      Int @default(0)
+  longestStreak      Int @default(0)
+  tasksCompleted     Int @default(0)
+  tasksExpired       Int @default(0)
+  annotationsApproved  Int @default(0)
+  annotationsCorrected Int @default(0)
+  annotationsDenied    Int @default(0)
+  submittedAnnotations Annotation[] @relation("SubmittedBy")
+  reviewedAnnotations  Annotation[] @relation("ReviewedBy")
+  notifications        Notification[]
+  sentNotifications    Notification[] @relation("SentBy")
+  posts                Post[]
+  tasks                Task[]
+  taskHistories        TaskHistory[]
+}
+
+model Post {
+  id           String   @id @default(cuid())
+  userId       String
+  instrumentId String
+  timeframe    String
+  title        String   @default("Untitled Post")
+  status       String   @default("DRAFT")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  sentAt       DateTime?
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  instrument   Instrument @relation(fields: [instrumentId], references: [id], onDelete: Cascade)
+  annotations  Annotation[]
+  task         Task?
+  tradeSetups  TradeSetup[]
+  @@index([userId])
+  @@index([status])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  fromUserId String?
+  type      String
+  title     String
+  message   String
+  annotationId String?
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user     User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fromUser User? @relation("SentBy", fields: [fromUserId], references: [id])
+  @@index([userId, read])
+  @@index([createdAt])
+}
+
+model Instrument {
+  id        String   @id @default(cuid())
+  symbol    String   @unique
+  name      String
+  assetClass String
+  pipSize   Float    @default(0.0001)
+  createdAt DateTime @default(now())
+  bars        Bar[]
+  annotations Annotation[]
+  sessions    AnnotationSession[]
+  posts       Post[]
+  tasks       Task[]
+}
+
+model Bar {
+  id          String   @id @default(cuid())
+  instrumentId String
+  timeframe   String
+  timestamp   DateTime
+  open        Float
+  high        Float
+  low         Float
+  close       Float
+  volume      Float?
+  instrument  Instrument @relation(fields: [instrumentId], references: [id], onDelete: Cascade)
+  @@unique([instrumentId, timeframe, timestamp])
+  @@index([instrumentId, timeframe, timestamp])
+}
+
+model AnnotationSession {
+  id           String   @id @default(cuid())
+  instrumentId String
+  labeler      String   @default("anonymous")
+  startedAt    DateTime @default(now())
+  endedAt      DateTime?
+  notes        String?
+  instrument   Instrument @relation(fields: [instrumentId], references: [id], onDelete: Cascade)
+  annotations  Annotation[]
+}
+
+model Annotation {
+  id           String   @id @default(cuid())
+  sessionId    String?
+  instrumentId String
+  type         String
+  timeframe    String
+  direction    String
+  priceStart   Float
+  priceEnd     Float
+  timeStart    DateTime
+  timeEnd      DateTime
+  schemaJson   String
+  outcome      String   @default("pending")
+  labeler      String   @default("anonymous")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  submittedById String
+  status        String   @default("PENDING")
+  reviewedById  String?
+  reviewedAt    DateTime?
+  reviewNotes   String?
+  correctedSchemaJson String?
+  screenshotUrl       String?
+  postId              String?
+  session      AnnotationSession? @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  instrument   Instrument         @relation(fields: [instrumentId], references: [id], onDelete: Cascade)
+  submittedBy  User               @relation("SubmittedBy", fields: [submittedById], references: [id])
+  reviewedBy   User?              @relation("ReviewedBy", fields: [reviewedById], references: [id])
+  post         Post?              @relation(fields: [postId], references: [id], onDelete: Cascade)
+  @@index([instrumentId, timeframe])
+  @@index([type])
+  @@index([status])
+  @@index([submittedById])
+  @@index([postId])
+}
+
+model CorrectedAnnotation {
+  id            String   @id @default(cuid())
+  originalId    String
+  postId        String
+  instrumentId  String
+  type          String
+  timeframe     String
+  direction     String
+  priceStart    Float
+  priceEnd      Float
+  timeStart     DateTime
+  timeEnd       DateTime
+  schemaJson    String
+  labeler       String
+  correctedById String
+  correctedAt   DateTime @default(now())
+  isDeleted     Boolean  @default(false)
+  @@index([postId])
+  @@index([originalId])
+}
+
+model TradeSetup {
+  id            String   @id @default(cuid())
+  postId        String
+  label         String   @default("Trade Setup")
+  entryStart    DateTime
+  entryEnd      DateTime
+  entryPriceStart Float
+  entryPriceEnd   Float
+  slStart       DateTime
+  slEnd         DateTime
+  slPriceStart  Float
+  slPriceEnd    Float
+  tpStart       DateTime
+  tpEnd         DateTime
+  tpPriceStart  Float
+  tpPriceEnd    Float
+  notes         String?
+  createdById   String
+  createdAt     DateTime @default(now())
+  post          Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  @@index([postId])
+}
+
+model Task {
+  id            String   @id @default(cuid())
+  userId        String
+  instrumentId  String
+  timeframe     String
+  startTimestamp DateTime
+  endTimestamp   DateTime
+  candleCount   Int      @default(1000)
+  status        String   @default("PENDING")
+  assignedAt    DateTime @default(now())
+  expiresAt     DateTime
+  submittedAt   DateTime?
+  postId        String?  @unique
+  pointsAwarded Int      @default(0)
+  taskType      String   @default("ANNOTATION")
+  taskHash      String   @unique
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  instrument    Instrument @relation(fields: [instrumentId], references: [id], onDelete: Cascade)
+  post          Post?    @relation(fields: [postId], references: [id])
+  @@index([userId, status])
+  @@index([status])
+  @@index([expiresAt])
+}
+
+model TaskHistory {
+  id             String   @id @default(cuid())
+  userId         String
+  instrumentId   String
+  instrumentSymbol String
+  timeframe      String
+  startTimestamp DateTime
+  endTimestamp   DateTime
+  taskType       String   @default("ANNOTATION")
+  status         String
+  submittedAt    DateTime?
+  reviewStatus   String?
+  score          Float?
+  pointsAwarded  Int      @default(0)
+  timeSpentMin   Int?
+  annotationCount Int     @default(0)
+  createdAt      DateTime @default(now())
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId])
+  @@index([status])
+}

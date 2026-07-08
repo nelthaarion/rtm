@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Read The Market - Cover</title>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --page-w: 794px;
+    --page-h: 1123px;
+    --bg: #f0f0ef;
+    --ink: #1d1c1a;
+    --muted: #85827b;
+    --accent: #8b7226;
+    --accent-deep: #534c34;
+    --border: #c1bba7;
+    --card: #edece9;
+  }
+  @page { size: 794px 1123px; margin: 0; }
+  html, body { margin: 0; padding: 0; background: var(--bg); }
+  body {
+    width: var(--page-w);
+    height: var(--page-h);
+    font-family: 'EB Garamond', 'FreeSerif', serif;
+    color: var(--ink);
+    position: relative;
+  }
+  .page {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+  /* Layer 0: thin top + bottom rules */
+  .rule-top, .rule-bottom {
+    position: absolute;
+    left: 14%;
+    right: 14%;
+    height: 1px;
+    background: var(--border);
+  }
+  .rule-top { top: 4%; }
+  .rule-bottom { bottom: 4%; }
+
+  /* Layer 1: top kicker - single line, only left side */
+  .kicker {
+    position: absolute;
+    top: 9%;
+    left: 14%;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .kicker .dot {
+    display: inline-block;
+    width: 5px; height: 5px;
+    background: var(--accent);
+    border-radius: 50%;
+    vertical-align: middle;
+    margin: 0 14px 2px 14px;
+  }
+
+  /* Layer 2: top right meta - well separated from kicker */
+  .kicker-right {
+    position: absolute;
+    top: 9%;
+    right: 14%;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 2px;
+    color: var(--muted);
+  }
+
+  /* Layer 3: accent vertical rule */
+  .accent-rule {
+    position: absolute;
+    top: 24%;
+    left: 14%;
+    width: 2px;
+    height: 260px;
+    background: var(--accent);
+  }
+
+  /* Layer 4: Hero Title block - offset right of accent rule */
+  .title-block {
+    position: absolute;
+    top: 24%;
+    left: calc(14% + 60px);
+    right: 14%;
+  }
+  .eyebrow {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 22px;
+  }
+  .title {
+    font-family: 'EB Garamond', serif;
+    font-size: 84px;
+    font-weight: 700;
+    line-height: 0.98;
+    letter-spacing: -2px;
+    color: var(--ink);
+    margin: 0 0 28px 0;
+  }
+  .title-line2 {
+    font-family: 'EB Garamond', serif;
+    font-size: 84px;
+    font-weight: 500;
+    font-style: italic;
+    line-height: 0.98;
+    letter-spacing: -2px;
+    color: var(--accent-deep);
+    margin: 0 0 28px 0;
+  }
+  .subtitle {
+    font-family: 'EB Garamond', serif;
+    font-size: 22px;
+    font-weight: 400;
+    line-height: 1.45;
+    color: var(--ink);
+    opacity: 0.86;
+    max-width: 540px;
+    margin: 0;
+  }
+
+  /* Layer 5: Summary block - bottom half */
+  .summary {
+    position: absolute;
+    top: 64%;
+    left: 14%;
+    right: 38%;
+    font-family: 'EB Garamond', serif;
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--ink);
+    opacity: 0.80;
+  }
+  .summary p { margin: 0 0 14px 0; }
+  .summary .lead {
+    font-style: italic;
+    color: var(--accent-deep);
+  }
+
+  /* Layer 6: Meta block (bottom-left) - well above bottom rule */
+  .meta {
+    position: absolute;
+    bottom: 9%;
+    left: 14%;
+    right: 50%;
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    line-height: 2;
+  }
+  .meta .label { color: var(--muted); opacity: 0.7; }
+  .meta .value { color: var(--ink); margin-left: 8px; }
+
+  /* Layer 7: Footer right (collection mark) - bottom right corner */
+  .footer-right {
+    position: absolute;
+    bottom: 9%;
+    right: 14%;
+    text-align: right;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: 1.5px;
+    color: var(--muted);
+    line-height: 2;
+  }
+  .footer-right .seal {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 13px;
+    color: var(--accent);
+    letter-spacing: 0.5px;
+    margin-top: 4px;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="rule-top"></div>
+  <div class="kicker">Phase Zero<span class="dot"></span>RTM Research Series</div>
+  <div class="kicker-right">N&deg; 001 / KB-RTM</div>
+
+  <div class="accent-rule"></div>
+
+  <div class="title-block">
+    <div class="eyebrow">A Practitioner Knowledge Base</div>
+    <h1 class="title">Read</h1>
+    <h1 class="title-line2">The Market</h1>
+    <p class="subtitle">Reverse-engineering the reasoning of professional RTM traders &mdash; the why behind every structure, every zone, every failure.</p>
+  </div>
+
+  <div class="summary">
+    <p class="lead">Before a single line of code is written.</p>
+    <p>This volume establishes a complete RTM knowledge base: definitions, relationships, failure conditions, and the reasoning chains that separate professionals from pattern-mechanics. Every concept is explained through auction logic and the IPDA, never through indicators. It is the foundation on which the future trading engine must be built.</p>
+  </div>
+
+  <div class="meta">
+    <div><span class="label">Deliverable</span><span class="value">Pre-Engine Knowledge Base</span></div>
+    <div><span class="label">Domain</span><span class="value">RTM &middot; Read The Market</span></div>
+    <div><span class="label">Phase</span><span class="value">Zero &mdash; Mastery</span></div>
+  </div>
+
+  <div class="footer-right">
+    <div>FOR RESEARCH USE</div>
+    <div class="seal">veritas in liquditate</div>
+  </div>
+
+  <div class="rule-bottom"></div>
+</div>
+</body>
+</html>
